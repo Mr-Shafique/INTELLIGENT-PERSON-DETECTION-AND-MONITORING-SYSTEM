@@ -66,7 +66,7 @@ const PersonManagement = () => {
         : {
             name: '',
             status: 'allowed',
-            image: 'https://via.placeholder.com/150',
+            image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
           }
     );
     setIsModalOpen(true);
@@ -106,9 +106,12 @@ const PersonManagement = () => {
                 <tr key={person.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <img
-                      src={person.image}
+                      src={person.image || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
                       alt={person.name}
-                      className="h-10 w-10 rounded-full"
+                      className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
+                      onError={(e) => {
+                        e.target.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+                      }}
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -197,4 +200,4 @@ const PersonManagement = () => {
   );
 };
 
-export default PersonManagement; 
+export default PersonManagement;
