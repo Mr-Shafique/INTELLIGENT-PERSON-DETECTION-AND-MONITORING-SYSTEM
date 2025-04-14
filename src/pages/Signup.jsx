@@ -43,7 +43,7 @@ const Signup = () => {
             Create an Account
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {/* <form className="mt-8 space-y-6" onSubmit={handleSubmit}> */}
           <div className="rounded-md shadow-sm space-y-4">
             <InputField
               label="Username"
@@ -76,7 +76,7 @@ const Signup = () => {
           )}
 
           <div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full"  onClick={handleSubmit}>
               Sign up
             </Button>
           </div>
@@ -87,7 +87,7 @@ const Signup = () => {
               Log in
             </Link>
           </div>
-        </form>
+        {/* </form> */}
       </div>
     </div>
   );

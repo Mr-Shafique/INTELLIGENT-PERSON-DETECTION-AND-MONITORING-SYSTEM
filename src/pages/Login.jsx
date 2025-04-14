@@ -43,7 +43,7 @@ const Login = () => {
             Intelligent System Login
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {/* <form className="mt-8 space-y-6" onSubmit={handleSubmit}> */}
           <div className="rounded-md shadow-sm space-y-4">
             <InputField
               label="Username"
@@ -66,7 +66,7 @@ const Login = () => {
           )}
 
           <div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={handleSubmit} >
               Sign in
             </Button>
           </div>
@@ -76,7 +76,7 @@ const Login = () => {
               Sign up
             </Link>
           </div>
-        </form>
+        {/* </form> */}
       </div>
     </div>
   );
