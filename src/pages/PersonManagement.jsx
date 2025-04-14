@@ -12,9 +12,11 @@ const PersonManagement = () => {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
+    cmsId: '',
     status: 'allowed',
-    image: 'https://via.placeholder.com/150',
+    image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
   });
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     fetchPersons();
@@ -29,20 +31,43 @@ const PersonManagement = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result });
+        setImageFile(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.name.trim()) {
+      return toast.error('Name is required');
+    }
+    
+    if (!formData.cmsId.trim()) {
+      return toast.error('CMS ID is required');
+    }
+    
     try {
       if (selectedPerson) {
-        await api.updatePerson(selectedPerson.id, formData);
+        // For editing existing person
+        await api.updatePerson(selectedPerson._id, formData);
         toast.success('Person updated successfully');
       } else {
+        // For adding new person
         await api.addPerson(formData);
         toast.success('Person added successfully');
       }
       setIsModalOpen(false);
       fetchPersons();
     } catch (error) {
-      toast.error('Error saving person: ' + error.message);
+      toast.error('Error saving person: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -65,10 +90,12 @@ const PersonManagement = () => {
         ? { ...person }
         : {
             name: '',
+            cmsId: '',
             status: 'allowed',
             image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
           }
     );
+    setImageFile(null);
     setIsModalOpen(true);
   };
 
@@ -91,10 +118,10 @@ const PersonManagement = () => {
                   Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  CMS ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Seen
+                  Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -103,7 +130,7 @@ const PersonManagement = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {persons.map((person) => (
-                <tr key={person.id}>
+                <tr key={person._id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <img
                       src={person.image || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
@@ -120,6 +147,11 @@ const PersonManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {person.cmsId}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         person.status === 'allowed'
@@ -130,9 +162,6 @@ const PersonManagement = () => {
                       {person.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(person.lastSeen).toLocaleString()}
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => openModal(person)}
@@ -141,7 +170,7 @@ const PersonManagement = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(person.id)}
+                      onClick={() => handleDelete(person._id)}
                       className="text-red-600 hover:text-red-900"
                     >
                       Delete
@@ -167,6 +196,35 @@ const PersonManagement = () => {
             }
             required
           />
+          <InputField
+            label="CMS ID"
+            value={formData.cmsId}
+            onChange={(e) =>
+              setFormData({ ...formData, cmsId: e.target.value })
+            }
+            required
+          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Profile Picture
+            </label>
+            <div className="flex items-center space-x-4">
+              <img
+                src={formData.image}
+                alt="Preview"
+                className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
+                onError={(e) => {
+                  e.target.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+                }}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Status
